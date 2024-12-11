@@ -1,0 +1,12 @@
+[tools]
+ruby = '3.2.6'
+node = '22.11.0'
+
+[tasks.db-create]
+run = "rails db:create"
+
+[tasks.compose-up]
+run = "	docker compose up -d --build"
+
+[tasks.compose-down]
+run = "	docker compose down"

@@ -1,0 +1,47 @@
+services:
+  postgres:
+    container_name: postgres
+    restart: always
+    volumes:
+      - spina_postgres:/var/lib/postgresql/data
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+
+  spinacms:
+    container_name: spinacms
+    restart: always
+    build:
+      context: .
+    volumes:
+      - spina_storage:/app/storage
+    links:
+      - postgres
+    ports:
+      - '8010:3000'
+    environment:
+      - SPINACMSTEST_DATABASE_HOST=postgres
+      - SPINACMSTEST_DATABASE_PORT=5432
+      - SPINACMSTEST_DATABASE_USER=postgres
+      - SPINACMSTEST_DATABASE_PASSWORD=postgres
+    depends_on:
+      - postgres
+
+volumes:
+  spina_postgres:
+  spina_storage:
+
+networks:
+  default:
+    name: spinacms
+    driver: bridge
+    
